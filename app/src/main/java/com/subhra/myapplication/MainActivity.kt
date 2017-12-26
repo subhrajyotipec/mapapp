@@ -1,14 +1,18 @@
 package com.subhra.myapplication
 
 import android.app.FragmentManager
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
+import android.support.v4.app.ActivityCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -36,6 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
         val mapfragment= supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapfragment.getMapAsync(this)
+        checkPermission()
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -48,6 +53,46 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+    }
+
+
+
+    var ACCESSLOCATION=123
+    fun checkPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+
+            if (ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+                requestPermissions(arrayOf( android.Manifest.permission.ACCESS_FINE_LOCATION),ACCESSLOCATION)
+                return
+            }
+
+
+
+        }
+        GetUserLocation()
+
+    }
+
+
+
+    fun GetUserLocation(){
+        Toast.makeText(this,"User Location Access On", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+
+        when(requestCode){
+            ACCESSLOCATION->{
+                if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+                    GetUserLocation()
+                }else{
+                    Toast.makeText(this,"We cannot access your location", Toast.LENGTH_LONG).show()}
+            }
+        }
+
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onBackPressed() {
