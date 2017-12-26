@@ -1,7 +1,11 @@
 package com.subhra.myapplication
 
 import android.app.FragmentManager
+import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -29,16 +33,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mMap = googleMap!!
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        val mapfragment= supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        val mapfragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapfragment.getMapAsync(this)
         checkPermission()
 
@@ -53,20 +55,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+//        var mylocation = myLocationListener()
+//       var locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 3f, mylocation)
+//        var mythread = mythread()
+//        mythread.start()
+
     }
 
 
-
-    var ACCESSLOCATION=123
+    var ACCESSLOCATION = 123
     fun checkPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
 
             if (ActivityCompat.checkSelfPermission(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-                requestPermissions(arrayOf( android.Manifest.permission.ACCESS_FINE_LOCATION),ACCESSLOCATION)
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), ACCESSLOCATION)
                 return
             }
-
 
 
         }
@@ -75,19 +81,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+    fun GetUserLocation() {
+        Toast.makeText(this, "User Location Access On", Toast.LENGTH_LONG).show()
 
-    fun GetUserLocation(){
-        Toast.makeText(this,"User Location Access On", Toast.LENGTH_LONG).show()
+        var mylocation = myLocationListener()
+        var locationmanager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+
+        locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 3f, mylocation)
+        var mythread = mythread()
+        mythread.start()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
-        when(requestCode){
-            ACCESSLOCATION->{
-                if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+        when (requestCode) {
+            ACCESSLOCATION -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     GetUserLocation()
-                }else{
-                    Toast.makeText(this,"We cannot access your location", Toast.LENGTH_LONG).show()}
+                } else {
+                    Toast.makeText(this, "We cannot access your location", Toast.LENGTH_LONG).show()
+                }
             }
         }
 
@@ -144,5 +158,58 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    var location: Location? = null
+
+    //get user location
+    inner class myLocationListener : LocationListener {
+        //        var location:Location?=null
+        constructor() {
+            location = Location("start")
+            location!!.longitude = 0.0
+            location!!.latitude = 0.0
+        }
+
+        override fun onLocationChanged(p0: Location?) {
+            location = p0
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onProviderEnabled(provider: String?) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onProviderDisabled(provider: String?) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+    }
+
+
+    inner class mythread : Thread {
+        constructor() : super() {
+
+        }
+
+        override fun run() {
+            while (true) {
+                try {
+
+                    runOnUiThread {
+                        mMap!!.clear()
+                        val sydney = LatLng(location!!.latitude, location!!.longitude)
+                        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+                    }
+                    Thread.sleep(1000)
+
+                } catch (ex: Exception) {
+                }
+            }
+        }
     }
 }
