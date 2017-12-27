@@ -173,19 +173,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         override fun onLocationChanged(p0: Location?) {
             location = p0
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
         override fun onProviderEnabled(provider: String?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
         override fun onProviderDisabled(provider: String?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
 
@@ -203,9 +203,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         mMap!!.clear()
                         val sydney = LatLng(location!!.latitude, location!!.longitude)
                         mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,10f))
                     }
-                    Thread.sleep(1000)
+                    Thread.sleep(10000)
 
                 } catch (ex: Exception) {
                 }
