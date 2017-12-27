@@ -1,5 +1,6 @@
 package com.subhra.myapplication
 
+import android.annotation.SuppressLint
 import android.app.FragmentManager
 import android.content.Context
 import android.content.pm.PackageManager
@@ -29,8 +30,8 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
 
-    override fun onMapReady(googleMap: GoogleMap?) {
-        mMap = googleMap!!
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
         // Add a marker in Sydney and move the camera
 
@@ -81,15 +82,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+
     fun GetUserLocation() {
         Toast.makeText(this, "User Location Access On", Toast.LENGTH_LONG).show()
 
-        var mylocation = myLocationListener()
-        var locationmanager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val mylocation = myLocationListener()
+        val locationmanager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
 
         locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 3f, mylocation)
-        var mythread = mythread()
+        var mythread = myThread()
         mythread.start()
     }
 
@@ -164,7 +166,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     //get user location
     inner class myLocationListener : LocationListener {
-        //        var location:Location?=null
+//                var location:Location?=null
         constructor() {
             location = Location("start")
             location!!.longitude = 0.0
@@ -172,7 +174,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         override fun onLocationChanged(p0: Location?) {
-            location = p0
+            location=p0
 
         }
 
@@ -190,7 +192,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    inner class mythread : Thread {
+    inner class myThread : Thread {
         constructor() : super() {
 
         }
@@ -202,10 +204,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     runOnUiThread {
                         mMap!!.clear()
                         val sydney = LatLng(location!!.latitude, location!!.longitude)
-                        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,10f))
+                        mMap!!.addMarker(MarkerOptions()
+                                .position(sydney)
+                                .title("Marker in Sydney"))
+                        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,10f))
                     }
-                    Thread.sleep(10000)
+                    Thread.sleep(10000999)
 
                 } catch (ex: Exception) {
                 }
